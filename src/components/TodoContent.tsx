@@ -89,10 +89,6 @@ export const TodoContent: React.FC = () => {
     setTodosFromServer(filteredTodoses);
   }
 
-  function handleUpdateTodos(todoses: Todo[]) {
-    setTodosFromServer(todoses);
-  }
-
   function handleErrorMessage(error: Errors | '') {
     setErrorMessage(error);
   }
@@ -203,7 +199,7 @@ export const TodoContent: React.FC = () => {
           loadingTodo={loadingTodo}
           anyLoading={anyLoading}
           clearCompleteLoading={complTodoDeleteLoading}
-          setTodos={handleUpdateTodos}
+          setTodos={setTodosFromServer}
           deleteTodo={handleDeleteTodo}
           setErrorMessage={handleErrorMessage}
           resetError={resetErrorMessage}

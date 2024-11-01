@@ -12,7 +12,7 @@ export const postTodo = (todo: Omit<Todo, 'id'>) => {
 };
 
 export const updateTodo = (todo: Todo) => {
-  return client.patch<Todo[]>(`/todos/${todo.id}`, todo);
+  return client.patch<Todo>(`/todos/${todo.id}`, todo);
 };
 
 export const deleteSelectedTodo = (todo: Todo) => {

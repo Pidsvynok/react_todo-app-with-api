@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { deleteSelectedTodo, getTodos, updateTodo } from '../api/todos';
+import { deleteSelectedTodo, updateTodo } from '../api/todos';
 import { Errors } from '../types/Errors';
 import { Todo } from '../types/Todo';
 import React, { useState } from 'react';
@@ -11,7 +11,7 @@ interface Props {
   anyLoading: boolean;
   isAllcompleted: boolean;
   clearCompleteLoading: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   deleteTodo: (todo: Todo) => void;
   setErrorMessage: (errorMessage: Errors | '') => void;
   resetError: () => void;
@@ -43,11 +43,14 @@ export const TodoList: React.FC<Props> = ({
     };
 
     updateTodo(todoWithUpdatedCompletion)
-      .then(() => {
-        return getTodos();
+      .then(responceTodo => {
+        setTodos(prev => {
+          return prev.map(iterTodo =>
+            iterTodo.id === responceTodo.id ? responceTodo : iterTodo,
+          );
+        });
+        setUpdatingTodoId(null);
       })
-      .then(setTodos)
-      .then(() => setUpdatingTodoId(null))
       .catch(() => {
         setErrorMessage(Errors.notUpdate);
         setTimeout(() => {
@@ -98,8 +101,13 @@ export const TodoList: React.FC<Props> = ({
     };
 
     updateTodo(updatedTodo)
-      .then(() => getTodos())
-      .then(setTodos)
+      .then(responceTodo => {
+        setTodos(prev => {
+          return prev.map(iterTodo =>
+            iterTodo.id === responceTodo.id ? responceTodo : iterTodo,
+          );
+        });
+      })
       .then(() => setUpdatingTodoId(null))
       .catch(() => {
         setErrorMessage(Errors.notUpdate);
@@ -131,7 +139,7 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           data-cy="Todo"
           className={classNames('todo', {
-            completed: completedTodos.includes(todo),
+            completed: todo.completed,
           })}
           onDoubleClick={() => {
             setUpdatingTodoId(todo.id || null);
