@@ -20,7 +20,6 @@ interface Props {
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  completedTodos,
   loadingTodo,
   anyLoading,
   clearCompleteLoading,
@@ -97,7 +96,7 @@ export const TodoList: React.FC<Props> = ({
       id: todo.id,
       completed: todo.completed,
       userId: todo.userId,
-      title: updatingValue,
+      title: updatingValue.trim(),
     };
 
     updateTodo(updatedTodo)
@@ -153,10 +152,7 @@ export const TodoList: React.FC<Props> = ({
               type="checkbox"
               className="todo__status"
               onClick={() => handleCompleteTodo(todo)}
-              checked={
-                completedTodos.find(thisArrTodo => thisArrTodo.id === todo.id)
-                  ?.completed
-              }
+              checked={todo.completed}
             />
           </label>
 

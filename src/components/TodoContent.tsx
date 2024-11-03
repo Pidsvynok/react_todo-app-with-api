@@ -14,7 +14,7 @@ import { FilterBy } from '../types/FilterBy';
 import { Header } from './Header';
 import { Footer } from './Footer';
 
-export const TodoContent: React.FC = () => {
+export const TodoContent: React.FC = ({}) => {
   const [todoValue, setTodoValue] = useState('');
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -94,18 +94,38 @@ export const TodoContent: React.FC = () => {
   }
 
   function handleAllButtonClick() {
-    todosFromServer.map(todo => {
-      setAnyLoading(true);
-      const updatedTodo: Todo = {
-        ...todo,
-        completed: isAllcompleted ? false : true,
-      };
+    const isAllTodoCompleted = todosFromServer.every(todo => todo.completed);
 
-      updateTodo(updatedTodo)
-        .then(() => getTodos())
-        .then(setTodosFromServer)
-        .catch(() => setErrorMessage(Errors.notUpdate))
-        .finally(() => setAnyLoading(false));
+    if (isAllTodoCompleted) {
+      todosFromServer.forEach(todo => {
+        updateTodo({ ...todo, completed: false })
+          .then(responceTodo => {
+            setTodosFromServer(prev => {
+              return prev.map(iterTodo =>
+                iterTodo.id === responceTodo.id ? responceTodo : iterTodo,
+              );
+            });
+          })
+          .catch(() => setErrorMessage(Errors.notUpdate))
+          .finally(() => setAnyLoading(false));
+      });
+
+      return;
+    }
+
+    todosFromServer.forEach(todo => {
+      if (!todo.completed) {
+        updateTodo({ ...todo, completed: true })
+          .then(responceTodo => {
+            setTodosFromServer(prev => {
+              return prev.map(iterTodo =>
+                iterTodo.id === responceTodo.id ? responceTodo : iterTodo,
+              );
+            });
+          })
+          .catch(() => setErrorMessage(Errors.notUpdate))
+          .finally(() => setAnyLoading(false));
+      }
     });
   }
 
